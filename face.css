@@ -1,0 +1,140 @@
+body {
+  background: linear-gradient(90deg, #f3f4f6, #fff, #f3f4f6);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-y: hidden;
+}
+
+body img {
+  position: absolute;
+  margin-bottom: opx;
+  margin-top: 0px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 0.8;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  transition: opacity 0.3s ease-in-out;
+}
+
+.card1 {
+  background: rgb(47, 51, 51);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  padding: 2rem;
+  max-width: 460px;
+  margin-top: -70px;
+  display: block;
+  align-items: center;
+}
+
+.card2 {
+  background: rgb(47, 51, 51);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  padding: 2rem;
+  max-width: 460px;
+  margin-top: -70px;
+  display: block;
+  align-items: center;
+}
+
+video, canvas {
+  background-color: rgb(89, 88, 88);
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 1rem;
+  max-width: 100%;
+  aspect-ratio: 4 / 3;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+button {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border-radius: 1rem;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  font-weight: 600;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 10px;
+  cursor: pointer;
+  gap: 20px;
+}
+
+#scanFingerprintBtn,
+#registerFingerprintBtn,
+#authenticateFingerprintBtn {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.fingerprint-box {
+  position: relative;
+  background: rgb(89, 88, 88);
+  border: 2px dashed #2d2e2e;
+  border-radius: 1rem;
+  width: 100%;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1d1f23;
+  font-weight: 600;
+  user-select: none;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  background: #021a12;
+  animation: scanMove 2s infinite ease-in-out;
+  display: none;
+}
+
+@keyframes scanMove {
+  0% { top: 0; }
+  50% { top: calc(100% - 4px); }
+  100% { top: 0; }
+}
+
+.status-text {
+  min-height: 1.5rem;
+  margin-top: 0.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+textarea {
+  width: 100%;
+  max-width: 480px;
+  margin-top: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #d1d5db;
+  padding: 1rem;
+  font-family: monospace;
+  resize: vertical;
+  height: 140px;
+}
+
+footer {
+  position: fixed;
+  margin-top: 855px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #64748b;
+}

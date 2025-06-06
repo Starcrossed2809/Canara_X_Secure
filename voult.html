@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Document Vault</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0d1117;
+            --card-bg: #161b22;
+            --accent: #00e0ff;
+            --success: #00ffab;
+            --warning: #ffdd57;
+            --danger: #ff3c74;
+            --text-light: #e6edf3;
+            --neon-glow: 0 0 10px var(--accent), 0 0 20px var(--accent), 0 0 30px var(--accent);
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .vault-header {
+            background: #111827;
+            color: var(--accent);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: var(--neon-glow);
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--accent);
+            border-radius: 15px;
+            padding: 2rem;
+            background: var(--card-bg);
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--accent);
+            transition: background 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            background: #1e293b;
+        }
+
+        .upload-zone.dragover {
+            background: #0f172a;
+        }
+
+        .document-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 0 10px rgba(0, 224, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--neon-glow);
+        }
+
+        .document-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+        }
+
+        .scan-status {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .status-safe {
+            background-color: var(--success);
+            color: #000;
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .status-malware {
+            background-color: var(--danger);
+            color: #fff;
+            box-shadow: 0 0 10px var(--danger);
+        }
+
+        .status-fake {
+            background-color: var(--warning);
+            color: #000;
+            box-shadow: 0 0 10px var(--warning);
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+            background-color: #374151;
+        }
+
+        .progress-bar {
+            background-color: var(--accent);
+        }
+
+        .scan-details {
+            background: #1f2937;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            box-shadow: inset 0 0 10px rgba(0, 224, 255, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            border: none;
+            color: #000;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #00b3cc;
+        }
+
+        h1, h3, h4, h5 {
+            color: var(--accent);
+        }
+
+        .lead, .text-muted {
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="vault-header">
+        <div class="container">
+            <h1><i class="fas fa-shield-alt me-2"></i>Secure Document Vault</h1>
+            <p class="lead">Upload and scan documents for malware and fake signatures</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Upload Section -->
+        <div class="row mb-4">
+            <div class="col-md-8 mx-auto">
+                <div class="upload-zone" id="uploadZone">
+                    <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                    <h4>Drag & Drop Files Here</h4>
+                    <p>or</p>
+                    <input type="file" id="fileInput" class="d-none" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                        Choose Files
+                    </button>
+                    <p class="mt-2 text-muted">Supported formats: PDF, DOC, DOCX, PNG, JPG, JPEG</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan Results -->
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div id="scanResults">
+                    <!-- Scan results will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Document List -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h3 class="mb-4">Scanned Documents</h3>
+                <div id="documentList">
+                    <!-- Document list will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let documents = [];
+
+        // File input handling
+        document.getElementById('fileInput').addEventListener('change', handleFiles);
+        
+        // Drag and drop handling
+        const uploadZone = document.getElementById('uploadZone');
+        
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            handleFiles({ target: { files: e.dataTransfer.files } });
+        });
+
+        // File handling
+        function handleFiles(e) {
+            const files = e.target.files;
+            for (let file of files) {
+                if (isValidFileType(file)) {
+                    scanDocument(file);
+                } else {
+                    showError('Invalid file type. Please upload PDF, DOC, DOCX, PNG, JPG, or JPEG files.');
+                }
+            }
+        }
+
+        function isValidFileType(file) {
+            const validTypes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'image/png',
+                'image/jpeg',
+                'image/jpg'
+            ];
+            return validTypes.includes(file.type);
+        }
+
+        // Document scanning simulation
+        function scanDocument(file) {
+            const document = {
+                id: Date.now(),
+                name: file.name,
+                type: file.type,
+                size: formatFileSize(file.size),
+                status: 'scanning',
+                timestamp: new Date().toLocaleString()
+            };
+
+            documents.unshift(document);
+            updateDocumentList();
+
+            // Simulate scanning process
+            let progress = 0;
+            const scanInterval = setInterval(() => {
+                progress += Math.random() * 30;
+                if (progress >= 100) {
+                    clearInterval(scanInterval);
+                    completeScan(document);
+                }
+                updateScanProgress(document.id, progress);
+            }, 500);
+        }
+
+        function completeScan(document) {
+            // Simulate scan results
+            const scanResult = simulateScanResult(document);
+            document.status = scanResult.status;
+            document.scanResult = scanResult;
+            updateDocumentList();
+            showScanResult(document);
+        }
+
+        function simulateScanResult(document) {
+            // Simulate different types of threats
+            const threats = [
+                { type: 'safe', probability: 0.7 },
+                { type: 'malware', probability: 0.2 },
+                { type: 'fake_signature', probability: 0.1 }
+            ];
+
+            const random = Math.random();
+            let cumulative = 0;
+            let selectedThreat;
+
+            for (let threat of threats) {
+                cumulative += threat.probability;
+                if (random <= cumulative) {
+                    selectedThreat = threat;
+                    break;
+                }
+            }
+
+            return {
+                status: selectedThreat.type,
+                details: generateThreatDetails(selectedThreat.type, document)
+            };
+        }
+
+        function generateThreatDetails(threatType, document) {
+            const details = {
+                safe: {
+                    message: 'No threats detected',
+                    icon: 'fa-check-circle',
+                    class: 'status-safe'
+                },
+                malware: {
+                    message: 'Malware detected',
+                    icon: 'fa-bug',
+                    class: 'status-malware'
+                },
+                fake_signature: {
+                    message: 'Fake signature detected',
+                    icon: 'fa-signature',
+                    class: 'status-fake'
+                }
+            };
+
+            return details[threatType];
+        }
+
+        // UI Updates
+        function updateScanProgress(documentId, progress) {
+            const progressElement = document.querySelector(`[data-document-id="${documentId}"] .progress-bar`);
+            if (progressElement) {
+                progressElement.style.width = `${progress}%`;
+            }
+        }
+
+        function updateDocumentList() {
+            const documentList = document.getElementById('documentList');
+            documentList.innerHTML = documents.map(doc => `
+                <div class="document-card" data-document-id="${doc.id}">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <i class="fas fa-file-alt document-icon"></i>
+                            <h5>${doc.name}</h5>
+                            <p class="text-muted">${doc.size} • ${doc.timestamp}</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            ${doc.status === 'scanning' ? `
+                                <div class="progress mb-2">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                         role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <p class="mb-0">Scanning...</p>
+                            ` : `
+                                <span class="scan-status ${doc.scanResult.details.class}">
+                                    <i class="fas ${doc.scanResult.details.icon} me-2"></i>
+                                    ${doc.scanResult.details.message}
+                                </span>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showScanResult(document) {
+            const scanResults = document.getElementById('scanResults');
+            const resultCard = document.createElement('div');
+            resultCard.className = `document-card ${document.scanResult.status}`;
+            resultCard.innerHTML = `
+                <div class="scan-details">
+                    <h4><i class="fas ${document.scanResult.details.icon} me-2"></i>Scan Complete</h4>
+                    <p>${document.scanResult.details.message}</p>
+                    <div class="mt-3">
+                        <strong>File:</strong> ${document.name}<br>
+                        <strong>Size:</strong> ${document.size}<br>
+                        <strong>Type:</strong> ${document.type}<br>
+                        <strong>Scanned:</strong> ${document.timestamp}
+                    </div>
+                </div>
+            `;
+            scanResults.insertBefore(resultCard, scanResults.firstChild);
+        }
+
+        function showError(message) {
+            alert(message);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>

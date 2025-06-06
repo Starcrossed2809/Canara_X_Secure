@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Biometric Recognition Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="face.css">
+</head>
+<body class="flex flex-col items-center justify-start py-10 gap-16">
+  <img src="./Image/biometric.jpg" alt="Background Image">
+
+  <h1 class="text-5xl font-extrabold text-gray-900 drop-shadow-md mb-8">
+    Biometric Recognition Portal
+  </h1>
+
+  <div class="flex flex-col md:flex-row gap-16 max-w-6xl px-6">
+
+    <!-- Face Recognition Section -->
+    <section class="card1">
+      <h2 class="text-3xl font-semibold text-blue-700 mb-6 flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Face Recognition
+      </h2>
+
+      <video id="video" autoplay muted playsinline></video>
+      <button id="captureFaceBtn" class="bg-blue-600 text-white hover:bg-blue-700">Capture Face</button>
+      <canvas id="faceCanvas" class="mt-6 hidden"></canvas>
+    </section>
+
+    <!-- Fingerprint Recognition Section -->
+    <section class="card2">
+      <h2 class="text-3xl font-semibold text-green-700 mb-6 flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-green-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 1a9 9 0 00-9 9v1a1 1 0 102 0v-1a7 7 0 1114 0v1c0 2.5-1.3 4.5-3 5.7a1 1 0 00-.4.8v2a1 1 0 002 0v-1.3A9 9 0 0021 11v-1a9 9 0 00-9-9zm0 4a5 5 0 00-5 5v1a1 1 0 002 0v-1a3 3 0 116 0v1c0 1.1-.6 2-1.5 2.5a1 1 0 00-.5.9v2a1 1 0 002 0v-1.3c1.8-.9 3-2.9 3-5.1v-1a5 5 0 00-5-5z"/>
+        </svg>
+        Fingerprint Recognition
+      </h2>
+
+      <div class="fingerprint-box" id="fingerprintBox">
+        <div id="scannerText">Place your finger here to scan.</div>
+        <div class="scan-line" id="scanLine"></div>
+      </div>
+
+      <button id="scanFingerprintBtn" class="bg-green-600 text-white hover:bg-green-700">Scan Fingerprint</button>
+      <button id="registerFingerprintBtn" class="bg-yellow-500 text-white hover:bg-yellow-600">Register System Fingerprint</button>
+      <button id="authenticateFingerprintBtn" class="bg-purple-600 text-white hover:bg-purple-700">Use System Fingerprint</button>
+
+      <div id="fingerprintStatus" class="status-text text-gray-700"></div>
+    </section>
+
+  </div>
+  <footer>
+    &copy; 2025 CanaraXSecure. All rights reserved.
+  </footer>
+
+  <script src="face.js"></script>
+</body>
+</html>

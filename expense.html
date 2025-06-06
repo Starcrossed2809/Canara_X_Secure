@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Privacy-First Expense Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+  :root {
+    --gradient: #01774c;
+    --gradient-start: #0525b5;
+    --gradient-end: #5405a2;
+    --primary-color: #6a40ad;
+    --primary-hover: #5f38ed;
+    --danger-color: #ef4444;
+    --success-color: #10b981;
+    --card-bg: rgba(255, 255, 255, 0.15);
+    --glass-blur: 12px;
+    --text-color-light: #f0f0f3;
+    --text-color-muted: #d1d5db;
+    --border-glass: rgba(255, 255, 255, 0.25);
+    --shadow-glow: rgba(177, 154, 248, 0.35);
+    --bg-gradient: linear-gradient(135deg, var(--gradient), var(--gradient-end));
+    --transition-speed: 0.3s;
+  }
+
+  /* Reset */
+  * {
+    box-sizing: border-box;
+  }
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-color-light);
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .page-wrapper {
+    flex: 1 0 auto;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 960px;
+    width: 100%;
+    backdrop-filter: blur(var(--glass-blur));
+    background: var(--card-bg);
+    border-radius: 24px;
+    border: 1px solid var(--border-glass);
+    box-shadow:
+      0 8px 32px var(--shadow-glow),
+      inset 0 0 20px rgba(255 255 255 / 0.15);
+    padding: 2.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  h1 {
+    font-weight: 900;
+    font-size: 2.8rem;
+    text-align: center;
+    background-image: var(--card-bg);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color:#24efa5;
+    letter-spacing: 1px;
+    user-select: none;
+    margin: 0 0 0.25rem;
+  }
+  p.subtitle {
+    font-weight: 500;
+    font-size: 1.15rem;
+    text-align: center;
+    color: var(--text-color-muted);
+    margin: 0 0 2rem;
+    user-select: none;
+  }
+
+  .privacy-features {
+    background: rgba(255 255 255/ 0.3);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    box-shadow: inset 0 0 25px rgba(255 255 255 / 0.3);
+    line-height: 1.5;
+    color: var(--text-color-light);
+    font-size: 0.9rem;
+    user-select: none;
+  }
+  .privacy-features h3 {
+    font-weight: 800;
+    margin-bottom: 1rem;
+  }
+  .privacy-features ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    list-style: disc;
+  }
+  .privacy-features ul li {
+    margin-bottom: 0.5rem;
+  }
+  .privacy-features strong {
+    color: var(--primary-color);
+  }
+
+  section.card {
+    background: rgba(255 255 255 / 0.3);
+    border-radius: 20px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 8px 25px rgba(0 0 0 / 0.18);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--border-glass);
+  }
+
+  section.card h2 {
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    user-select: none;
+  }
+
+  form {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .form-group {
+    flex: 1 1 180px;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color-light);
+  }
+  input[type="text"], input[type="number"], input[type="date"], select {
+    font-size: 1rem;
+    color: var(--text-color-light);
+    background: rgba(255 255 255 / 0.12);
+    border: 1.5px solid transparent;
+    border-radius: 12px;
+    padding: 0.65rem 1rem;
+    transition: all var(--transition-speed) ease;
+    box-shadow: inset 0 0 10px rgba(255 255 255 / 0.15);
+  }
+  input[type="text"]::placeholder,
+  input[type="number"]::placeholder,
+  input[type="date"]::placeholder {
+    color: var(--text-color-muted);
+  }
+  input[type="text"]:focus, input[type="number"]:focus,
+  input[type="date"]:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: rgba(255 255 255 / 0.25);
+    box-shadow: 0 0 18px var(--primary-color);
+    color: var(--text-color-light);
+  }
+
+  button#addExpenseBtn {
+    flex-grow: 0;
+    flex-shrink: 0;
+    background: var(--primary-color);
+    color: white;
+    font-weight: 700;
+    font-size: 1.15rem;
+    border: none;
+    border-radius: 16px;
+    padding: 0.85rem 2rem;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(127, 90, 240, 0.5);
+    transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+    user-select: none;
+    align-self: flex-end;
+    margin-top: auto;
+  }
+  button#addExpenseBtn:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 10px 35px rgba(154, 126, 254, 0.7);
+  }
+  button#addExpenseBtn:active {
+    transform: scale(0.97);
+  }
+
+  button#resetBtn {
+    background: transparent;
+    border: 2px solid var(--danger-color);
+    color: var(--danger-color);
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 1rem;
+    user-select: none;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+    margin-left: 1rem;
+  }
+  button#resetBtn:hover {
+    background: var(--danger-color);
+    color: white;
+  }
+  button#resetBtn:active {
+    transform: scale(0.95);
+  }
+
+  .alert {
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 14px;
+    user-select: none;
+  }
+  .alert.warning {
+    background-color: var(--danger-color);
+    box-shadow: 0 0 12px var(--danger-color);
+    color: white;
+  }
+  .alert.success {
+    background-color: var(--success-color);
+    box-shadow: 0 0 12px var(--success-color);
+    color: white;
+  }
+
+  .expenses-list {
+    max-height: 320px;
+    overflow-y: auto;
+    border-radius: 18px;
+    border: 1.5px solid var(--border-glass);
+    box-shadow: inset 0 0 15px rgba(255 255 255 / 0.1);
+    background: rgba(0 0 0 / 0.1);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  thead {
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+  }
+  th, td {
+    padding: 0.85rem 1.1rem;
+    border-bottom: 1.2px solid var(--border-glass);
+    text-align: left;
+  }
+  tbody tr:hover {
+    background: rgba(127 90 240 / 0.2);
+    transition: background-color var(--transition-speed);
+  }
+  .remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--danger-color);
+    cursor: pointer;
+    user-select: none;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .remove-btn:hover {
+    text-decoration: underline;
+  }
+
+  .summary-section {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 2.5rem;
+    border-top: 1.5px solid rgba(255 255 255 / 0.15);
+    padding-top: 1.5rem;
+  }
+
+  .summary-chart {
+    flex: 2 1 480px;
+    border-radius: 20px;
+    background: rgba(255 255 255 / 0.18);
+    box-shadow: inset 0 0 25px rgba(255 255 255 / 0.35);
+    padding: 2rem 2.5rem;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  canvas#expenseChart {
+    width: 100% !important;
+    height: 320px !important;
+    border-radius: 20px;
+  }
+
+  .summary-list {
+    flex: 1 1 230px;
+    background: rgba(255 255 255 / 0.12);
+    border-radius: 20px;
+    padding: 2rem 2rem 2rem 3rem;
+    box-shadow: inset 0 0 20px rgba(255 255 255 / 0.3);
+    font-size: 1rem;
+    color: var(--text-color-light);
+    height: 320px;
+    overflow-y: auto;
+    border-left: 1.5px solid rgba(255 255 255 / 0.3);
+  }
+  .summary-list h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    user-select: none;
+  }
+  .summary-list ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  .summary-list li {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+  }
+  .summary-list li .color-badge {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(0,0,0,0.15);
+  }
+  .summary-list li span.amount {
+    margin-left: auto;
+    font-weight: 700;
+    min-width: 70px;
+    text-align: right;
+  }
+
+  footer {
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-color-muted);
+    padding: 1rem 0 1.5rem;
+    user-select: none;
+    background: transparent;
+  }
+
+  /* Scrollbars */
+  .expenses-list::-webkit-scrollbar,
+  .summary-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .expenses-list::-webkit-scrollbar-thumb,
+  .summary-list::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 20px;
+  }
+  .expenses-list::-webkit-scrollbar-track,
+  .summary-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  @media (max-width: 720px) {
+    form {
+      flex-direction: column;
+    }
+    .form-group {
+      min-width: 100%;
+    }
+    button#addExpenseBtn, button#resetBtn {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 10px;
+    }
+    .summary-section {
+      flex-wrap: wrap;
+    }
+    .summary-chart, .summary-list {
+      flex: 1 1 100%;
+      padding: 1.5rem;
+      border-left: none;
+      border-top: 1.5px solid rgba(255 255 255 / 0.15);
+      margin-top: 1rem;
+      height: 300px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <div class="container" role="main">
+      <h1>Privacy-First Expense Tracker</h1>
+      <p class="subtitle">Track and visualize your expenses locally with privacy-focused features and anomaly alerts.</p>
+
+      <div class="privacy-features" aria-label="Privacy-first features description">
+        <h3>Privacy-First Features:</h3>
+        <ul>
+          <li><strong>Local-Only Storage:</strong> Your data stays on your device only - never sent out.</li>
+          <li><strong>Differential Privacy:</strong> Visualizations add noise to keep raw data secure.</li>
+          <li><strong>Offline-First:</strong> Works completely without internet connection.</li>
+          <li><strong>Minimal Data Collection:</strong> Only what you enter, no extras.</li>
+          <li><strong>Open-Source &amp; Self-Hosted:</strong> Runs entirely in your browser.</li>
+          <li><strong>Zero-Knowledge:</strong> We don't access or store your data anywhere else.</li>
+        </ul>
+      </div>
+
+      <section class="card" aria-labelledby="add-expense-heading">
+        <h2 id="add-expense-heading">Add Expense</h2>
+        <form id="expenseForm" aria-describedby="formDesc">
+          <div class="form-group">
+            <label for="expenseName">Description</label>
+            <input type="text" id="expenseName" name="expenseName" placeholder="Groceries, Rent, Coffee" required aria-required="true" autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label for="expenseCategory">Category</label>
+            <select id="expenseCategory" name="expenseCategory" aria-required="true" required>
+              <option value="" disabled selected>Select category</option>
+              <option value="Food & Drinks">Food & Drinks</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Rent">Rent</option>
+              <option value="Transport">Transport</option>
+              <option value="Health">Health</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="expenseAmount">Amount ($)</label>
+            <input type="number" id="expenseAmount" name="expenseAmount" step="0.01" min="0.01" placeholder="e.g. 12.50" required aria-required="true" />
+          </div>
+          <div class="form-group">
+            <label for="expenseDate">Date</label>
+            <input type="date" id="expenseDate" name="expenseDate" required aria-required="true" />
+          </div>
+          <div style="display:flex; flex-direction: column; justify-content:flex-end;">
+            <button id="addExpenseBtn" type="submit" aria-label="Add expense">Add Expense</button>
+            <button type="button" id="resetBtn" aria-label="Reset all expenses" title="Clear all expenses">Reset All</button>
+          </div>
+        </form>
+        <div id="alert" class="alert" role="alert" aria-live="assertive"></div>
+      </section>
+
+      <section class="card" aria-labelledby="expenses-list-heading">
+        <h2 id="expenses-list-heading">Your Expenses</h2>
+        <div class="expenses-list" tabindex="0" aria-live="polite" aria-atomic="true">
+          <table aria-describedby="expenses-list-info" role="region" aria-label="List of expenses">
+            <caption id="expenses-list-info" class="sr-only">List of added expenses</caption>
+            <thead>
+              <tr>
+                <th scope="col">Description</th>
+                <th scope="col">Category</th>
+                <th scope="col">Amount ($)</th>
+                <th scope="col">Date</th>
+                <th scope="col" style="width: 3rem;">Remove</th>
+              </tr>
+            </thead>
+            <tbody id="expensesTableBody">
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="chart-section-heading">
+        <h2 id="chart-section-heading">Expense Summary</h2>
+        <div class="summary-section" role="region" aria-label="Expense summary visualization and details">
+          <div class="summary-chart">
+            <canvas id="expenseChart" aria-label="Donut chart showing expenses distribution by category" role="img"></canvas>
+          </div>
+          <div class="summary-list" aria-label="Expense summary details">
+            <h3>Summary by Category</h3>
+            <ul id="summaryList"></ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2024 Privacy-First Expense Tracker - Fully local &amp; privacy respecting.
+  </footer>
+
+<script>
+  const STORAGE_KEY = 'privacyExpenseTrackerData';
+  const todayStr = new Date().toISOString().slice(0, 10);
+  document.getElementById('expenseDate').max = todayStr;
+
+  const expenseForm = document.getElementById('expenseForm');
+  const alertBox = document.getElementById('alert');
+  const expensesTableBody = document.getElementById('expensesTableBody');
+  const expenseChart = document.getElementById('expenseChart');
+  const resetBtn = document.getElementById('resetBtn');
+  const summaryList = document.getElementById('summaryList');
+
+  let expenses = [];
+
+  function loadExpenses() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      expenses = stored ? JSON.parse(stored) : [];
+    } catch {
+      expenses = [];
+    }
+  }
+  function saveExpenses() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
+  }
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function renderExpensesList() {
+    expensesTableBody.innerHTML = '';
+    if (expenses.length === 0) {
+      expensesTableBody.innerHTML = '<tr><td colspan="5" style="font-style:italic;color:#d1d5db;text-align:center;">No expenses added yet.</td></tr>';
+      return;
+    }
+    expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+    expenses.forEach(e => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${e.description}</td>
+        <td>${e.category}</td>
+        <td>$${e.amount.toFixed(2)}</td>
+        <td>${formatDate(e.date)}</td>
+        <td style="text-align:center;">
+          <button class="remove-btn" aria-label="Remove expense ${e.description} of $${e.amount.toFixed(2)}" title="Remove">&times;</button>
+        </td>
+      `;
+      const removeBtn = tr.querySelector('.remove-btn');
+      removeBtn.addEventListener('click', () => {
+        if (confirm(`Remove expense "${e.description}" of $${e.amount.toFixed(2)}?`)) {
+          expenses = expenses.filter(x => x.id !== e.id);
+          saveExpenses();
+          renderExpensesList();
+          updateSummaryAndChart();
+          showAlert('Expense removed.', 'success');
+        }
+      });
+      expensesTableBody.appendChild(tr);
+    });
+  }
+
+  function showAlert(message, type = 'warning') {
+    alertBox.style.display = 'block';
+    alertBox.className = `alert ${type}`;
+    alertBox.textContent = message;
+    setTimeout(() => {
+      alertBox.style.display = 'none';
+    }, 3500);
+  }
+
+  // Differential privacy noise function (Laplacian)
+  function laplaceNoise(scale) {
+    const u = Math.random() - 0.5;
+    return -scale * Math.sign(u) * Math.log(1 - 2 * Math.abs(u));
+  }
+
+  function aggregateExpensesWithNoise(scale = 1.8) {
+    const sums = {};
+    for (const e of expenses) {
+      sums[e.category] = (sums[e.category] || 0) + e.amount;
+    }
+    const noisySums = {};
+    for (const cat in sums) {
+      noisySums[cat] = Math.max(0, sums[cat] + laplaceNoise(scale));
+    }
+    return noisySums;
+  }
+
+  function detectAnomalies() {
+    if (expenses.length === 0) return [];
+    const msPerDay = 86400000;
+    const now = Date.now();
+    const buckets = {};
+    for (const e of expenses) {
+      const dt = new Date(e.date).getTime();
+      const diffDays = Math.floor((now - dt) / msPerDay);
+      const bucketIndex = Math.floor(diffDays / 7);
+      if (bucketIndex < 0) continue;
+      if (!buckets[e.category]) buckets[e.category] = {};
+      buckets[e.category][bucketIndex] = (buckets[e.category][bucketIndex] || 0) + e.amount;
+    }
+    const alerts = [];
+    for (const cat in buckets) {
+      const catBuckets = buckets[cat];
+      const current = catBuckets[0] || 0;
+      const prev = [];
+      for (let i = 1; i <= 5; i++) {
+        if (catBuckets[i]) prev.push(catBuckets[i]);
+      }
+      if (prev.length < 2) continue;
+      const mean = prev.reduce((a, b) => a + b, 0) / prev.length;
+      const variance = prev.reduce((a, b) => a + (b - mean) ** 2, 0) / prev.length;
+      const stddev = Math.sqrt(variance);
+      if (current > mean + 2 * stddev && current > 20) {
+        alerts.push({ category: cat, current, mean, stddev });
+      }
+    }
+    return alerts;
+  }
+
+  function renderAlerts(alerts) {
+    if (alerts.length === 0) {
+      alertBox.style.display = 'none';
+      alertBox.textContent = '';
+      return;
+    }
+    alertBox.style.display = 'block';
+    alertBox.className = 'alert warning';
+    alertBox.textContent = `🚨 Anomaly spending alert! Unusually high spending in: ${alerts.map(a => a.category).join(', ')}`;
+  }
+
+  // Animate donut chart drawing with requestAnimationFrame
+  function drawChart(dataObj) {
+    const ctx = expenseChart.getContext('2d');
+    const width = expenseChart.width;
+    const height = expenseChart.height;
+    const radius = Math.min(width, height) / 2 - 40;
+    ctx.clearRect(0, 0, width, height);
+
+    const categories = Object.keys(dataObj).filter(cat => dataObj[cat] > 0);
+    if (categories.length === 0) {
+      ctx.fillStyle = '#d1d5db';
+      ctx.font = '20px Poppins, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('No data to visualize', width / 2, height / 2);
+      return [];
+    }
+    const values = categories.map(cat => dataObj[cat]);
+    const total = values.reduce((a, b) => a + b, 0);
+    const colors = categories.map((cat, i) => pastelColor(i + cat.length));
+
+    let startAngle = -Math.PI / 2;
+    let animationProgress = 0;
+    const animationSteps = 60;
+
+    function pastelColor(seed) {
+      const r = (Math.sin(seed * 12.9898 + 78.233) * 43758.5453) % 1;
+      const g = (Math.sin(seed * 39.3468 + 9.123) * 12345.6789) % 1;
+      const b = (Math.sin(seed * 56.1234 + 45.678) * 98765.4321) % 1;
+      return `rgba(${Math.floor(155 + r * 100)},${Math.floor(155 + g * 100)},${Math.floor(155 + b * 100)},0.85)`;
+    }
+
+    function drawFrame() {
+      ctx.clearRect(0, 0, width, height);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      let angleSum = 0;
+      for (let i = 0; i < categories.length; i++) {
+        const value = values[i];
+        const sliceAngle = (value / total) * 2 * Math.PI * animationProgress;
+
+        if (sliceAngle > 0) {
+          ctx.beginPath();
+          ctx.moveTo(width / 2, height / 2);
+          ctx.arc(width / 2, height / 2, radius, startAngle + angleSum, startAngle + angleSum + sliceAngle);
+          ctx.closePath();
+          ctx.fillStyle = colors[i];
+          ctx.shadowColor = 'rgba(0,0,0,0.1)';
+          ctx.shadowBlur = 6;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+        angleSum += sliceAngle;
+      }
+
+      // Donut center circle
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      ctx.arc(width / 2, height / 2, radius * 0.55, 0, 2 * Math.PI);
+      ctx.fill();
+
+      // Text inside donut
+      ctx.fillStyle = 'var(--primary-color)';
+      ctx.font = 'bold 26px Poppins, sans-serif';
+      ctx.fillText('Total', width / 2, height / 2 - 16);
+      ctx.font = 'bold 22px Poppins, sans-serif';
+      ctx.fillText(`$${total.toFixed(2)}`, width / 2, height / 2 + 18);
+
+      if (animationProgress < 1) {
+        animationProgress += 1 / animationSteps;
+        requestAnimationFrame(drawFrame);
+      }
+    }
+    requestAnimationFrame(drawFrame);
+
+    return colors;
+  }
+
+  function renderSummaryList(dataObj, colors) {
+    summaryList.innerHTML = '';
+    const categories = Object.keys(dataObj);
+    if (categories.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = 'No expense data available.';
+      summaryList.appendChild(li);
+      return;
+    }
+
+    const total = categories.reduce((sum, cat) => sum + dataObj[cat], 0);
+    categories.forEach((cat, idx) => {
+      if (dataObj[cat] <= 0) return;
+      const percent = ((dataObj[cat] / total) * 100).toFixed(1);
+      const li = document.createElement('li');
+
+      const badge = document.createElement('span');
+      badge.className = 'color-badge';
+      badge.style.backgroundColor = colors[idx];
+      li.appendChild(badge);
+
+      li.appendChild(document.createTextNode(cat));
+
+      const amountSpan = document.createElement('span');
+      amountSpan.className = 'amount';
+      amountSpan.textContent = `$${dataObj[cat].toFixed(2)} (${percent}%)`;
+      li.appendChild(amountSpan);
+
+      summaryList.appendChild(li);
+    });
+  }
+
+  function updateSummaryAndChart() {
+    const aggregate = aggregateExpensesWithNoise(1.5);
+    const colors = drawChart(aggregate);
+    renderSummaryList(aggregate, colors);
+    const alerts = detectAnomalies();
+    renderAlerts(alerts);
+  }
+
+  expenseForm.addEventListener('submit', e => {
+    e.preventDefault();
+    alertBox.style.display = 'none';
+
+    const desc = expenseForm.expenseName.value.trim();
+    const cat = expenseForm.expenseCategory.value;
+    const amt = parseFloat(expenseForm.expenseAmount.value);
+    const date = expenseForm.expenseDate.value;
+
+    if (!desc || !cat || !amt || !date) {
+      showAlert('Please fill in all fields correctly.');
+      return;
+    }
+    if (amt <= 0) {
+      showAlert('Amount must be greater than zero.');
+      return;
+    }
+    if (new Date(date) > new Date()) {
+      showAlert('Date cannot be in the future.');
+      return;
+    }
+
+    const newExpense = {
+      id: Date.now() + Math.random(),
+      description: desc,
+      category: cat,
+      amount: amt,
+      date: date,
+    };
+    expenses.push(newExpense);
+    saveExpenses();
+    renderExpensesList();
+    updateSummaryAndChart();
+
+    showAlert('Expense added.', 'success');
+
+    expenseForm.reset();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    if (expenses.length === 0) {
+      showAlert('No expenses to reset.', 'warning');
+      return;
+    }
+    if (confirm('Are you sure you want to delete ALL expenses? This action cannot be undone.')) {
+      expenses = [];
+      saveExpenses();
+      renderExpensesList();
+      updateSummaryAndChart();
+      showAlert('All expenses reset.', 'success');
+    }
+  });
+
+  function showAlert(message, type = 'warning') {
+    alertBox.style.display = 'block';
+    alertBox.className = `alert ${type}`;
+    alertBox.textContent = message;
+    setTimeout(() => {
+      alertBox.style.display = 'none';
+    }, 3500);
+  }
+
+  function loadExpenses() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      expenses = stored ? JSON.parse(stored) : [];
+    } catch {
+      expenses = [];
+    }
+  }
+
+  function renderExpensesList() {
+    expensesTableBody.innerHTML = '';
+    if (expenses.length === 0) {
+      expensesTableBody.innerHTML = '<tr><td colspan="5" style="font-style:italic;color:#d1d5db;text-align:center;">No expenses added yet.</td></tr>';
+      return;
+    }
+    expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+    expenses.forEach(e => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${e.description}</td>
+        <td>${e.category}</td>
+        <td>$${e.amount.toFixed(2)}</td>
+        <td>${formatDate(e.date)}</td>
+        <td style="text-align:center;">
+          <button class="remove-btn" aria-label="Remove expense ${e.description} of $${e.amount.toFixed(2)}" title="Remove">&times;</button>
+        </td>
+      `;
+      const removeBtn = tr.querySelector('.remove-btn');
+      removeBtn.addEventListener('click', () => {
+        if (confirm(`Remove expense "${e.description}" of $${e.amount.toFixed(2)}?`)) {
+          expenses = expenses.filter(x => x.id !== e.id);
+          saveExpenses();
+          renderExpensesList();
+          updateSummaryAndChart();
+          showAlert('Expense removed.', 'success');
+        }
+      });
+      expensesTableBody.appendChild(tr);
+    });
+  }
+
+  function init() {
+    loadExpenses();
+    renderExpensesList();
+    updateSummaryAndChart();
+  }
+  init();
+</script>
+</body>
+</html>

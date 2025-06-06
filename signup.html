@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE-edge">
+  <meta name="viewport" content="width-device-width, initial-scale-1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>CanaraXSecure</title>
+</head>
+
+<body>
+    <img src="./Image/signin.jpg" alt="">
+  <div class="signup-box">
+    <img src="./Image/signup form.jpg" alt="">
+    <h2>Sign Up</h2>
+    <form>
+      <div class="user-box">
+        <input id="username" type="text" name="username" placeholder="Username" required />
+      </div>
+
+      <div class="user-box">
+        <input id="first-name" type="text" name="first-name" placeholder="First Name" required />
+      </div>
+
+      <div class="user-box">
+        <input id="Last-name" type="text" name="last-name" placeholder="Last Name" required />
+      </div>
+
+      <div class="user-box">
+        <input id="email" type="email" name="email" placeholder="Email" required />
+      </div>
+
+      <div class="user-box">
+        <input type="password" id="pwd" name="pwd" placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=*[A-Z]).{8,}" minlength="8" maxlength="15" required />
+      </div>
+
+      <div class="forgot-password">
+        <p><a class="forgot-password-link" target="_blank" href="#">forgot password?</a></p>
+      </div>
+
+      <a class="submit" target="_blank" href="#">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        Submit
+      </a>
+
+      <div class="log-in">
+        <p>Already have an account? <a class="log-in-link" target="_blank" href="./login.html"><strong>Log In</strong></a></p>
+      </div>
+    </form>
+  </div>
+</body>
+
+<div class="footer-div">
+  <footer>
+    <p>&copy; 2025 CanaraXSecure. All rights reserved.</p>
+  </footer>
+</div>
+
+</html>
